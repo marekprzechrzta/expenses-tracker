@@ -7,22 +7,40 @@ import { getDateFromWeek } from "@/helpers/getDateFromWeek";
 import { add } from "@/helpers/add";
 import { calculateEndDate } from "@/helpers/calculateEndDate";
 
+let _db: SQLite.SQLiteDatabase;
+
+const initDatabase = async () => {
+  const db = await SQLite.openDatabaseAsync("expensesDb");
+  await db.execAsync(`
+      PRAGMA journal_mode = WAL;
+      CREATE TABLE IF NOT EXISTS expenses (id INTEGER PRIMARY KEY NOT NULL, name TEXT NOT NULL, category TEXT NOT NULL, amount REAL, date TEXT NOT NULL);
+    `);
+  return db;
+};
+
+const getDatabase = async () => {
+  if (!_db) {
+    _db = await initDatabase();
+  }
+  return _db;
+};
+
 export const createExpense = async (payload: Omit<Expense, "id">) => {
   const { name, category, amount, date } = payload;
-  const db = await SQLite.openDatabaseAsync("expensesDb");
+  const db = await getDatabase();
   const query =
     "INSERT INTO expenses (name, category, amount, date) VALUES (?, ?, ?, ?)";
   await db.runAsync(query, name, category, amount, date);
 };
 
 export const getRecentExpenses = async (limit = 5) => {
-  const db = await SQLite.openDatabaseAsync("expensesDb");
+  const db = await getDatabase();
   const query = `SELECT * FROM expenses ORDER BY date DESC LIMIT ${limit}`;
   return db.getAllAsync<Expense>(query);
 };
 
 export const getAllExpenses = async () => {
-  const db = await SQLite.openDatabaseAsync("expensesDb");
+  const db = await getDatabase();
   const query = `SELECT * FROM expenses ORDER BY date DESC`;
   return db.getAllAsync<Expense>(query);
 };
@@ -43,14 +61,14 @@ export const searchByName = async (
     query += ` AND date BETWEEN '${from}' AND '${to}'`;
   }
 
-  const db = await SQLite.openDatabaseAsync("expensesDb");
+  const db = await getDatabase();
   return db.getAllAsync<Expense>(query);
 };
 
 export const findExpenses = async (timePeriod: string, date: string) => {
   const { from, to } = timePeriodToDateRange(timePeriod, date);
   const dateRangeQuery = createFindExpensesQuery(from, to);
-  const db = await SQLite.openDatabaseAsync("expensesDb");
+  const db = await getDatabase();
   return db.getAllAsync<Expense>(dateRangeQuery);
 };
 

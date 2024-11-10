@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, SafeAreaView, View } from "react-native";
+import { Alert, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import Button from "@/components/Button";
 import Header from "@/components/Header";

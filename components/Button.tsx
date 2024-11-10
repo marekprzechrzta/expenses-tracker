@@ -1,5 +1,5 @@
 import styles from "@/constants/styles";
-import { color, font, shadow, size } from "@/constants/theme";
+import { color, font, size } from "@/constants/theme";
 import { TouchableOpacity, Text, StyleSheet } from "react-native";
 
 export default function Button({
@@ -49,7 +49,6 @@ const style = StyleSheet.create({
     borderRadius: size.large * 2,
     paddingLeft: size.medium,
     paddingRight: size.medium,
-    ...shadow.small,
   },
   text: {
     color: color.black,

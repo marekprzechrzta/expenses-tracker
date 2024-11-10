@@ -1,6 +1,7 @@
-import { SafeAreaView, ScrollView, Text, View } from "react-native";
+import { ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import Header from "@/components/Header";
 import ButtonGroup from "@/components/ButtonGroup";

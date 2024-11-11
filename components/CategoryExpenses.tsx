@@ -15,21 +15,31 @@ export default function CategoryExpenses({
   onPress?: () => void;
 }) {
   return (
-    <TouchableOpacity style={{ ...styles.containerPadding }} onPress={onPress}>
-      <Header totalAmount={totalAmount} />
+    <View style={styles.containerPadding}>
+      <Header totalAmount={totalAmount} onPress={onPress} />
       {expenses.map((expense) => (
         <Row key={expense.category} expense={expense} />
       ))}
-    </TouchableOpacity>
+    </View>
   );
 }
 
-const Header = ({ totalAmount }: { totalAmount: number }) => {
+const Header = ({
+  totalAmount,
+  onPress,
+}: {
+  totalAmount: number;
+  onPress?: () => void;
+}) => {
   return (
-    <View style={{ ...styles.containerLayout }}>
+    <TouchableOpacity
+      style={{ ...styles.containerLayout }}
+      onPress={onPress}
+      disabled={!onPress}
+    >
       <Text style={style.headerText}>Total amount</Text>
       <Text style={style.headerText}>${totalAmount}</Text>
-    </View>
+    </TouchableOpacity>
   );
 };
 

@@ -18,21 +18,22 @@ import { TimePeriodExpense } from "@/models/TimePeriodExpense";
 
 export default function Home() {
   const router = useRouter();
-  const { data: recentExpenses } = useFunction(getRecentExpenses);
-  const { data: expenses, call } = useFunction(getTimePeriodExpenses);
+  const recentExpenses = useFunction(getRecentExpenses);
+  const timePeriodExpenses = useFunction(getTimePeriodExpenses);
   const [timePeriod, setTimePeriod] = useState("Daily");
   const [selectedExpenses, setSelectedExpenses] = useState<TimePeriodExpense>();
 
-  const handleTimePeriodChange = async (timePeriod: string) => {
-    await call(() => getTimePeriodExpenses(timePeriod));
-    setTimePeriod(timePeriod);
-  };
-
+  const loading = recentExpenses.loading || timePeriodExpenses.loading;
   const categoryExpensesQuery = `timePeriod=${timePeriod}&date=${selectedExpenses?.date}`;
 
-  if (!expenses?.length) {
+  if (!timePeriodExpenses.data?.length && !loading) {
     return <Empty />;
   }
+
+  const handleTimePeriodChange = async (timePeriod: string) => {
+    setTimePeriod(timePeriod);
+    await timePeriodExpenses.call(() => getTimePeriodExpenses(timePeriod));
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -44,7 +45,11 @@ export default function Home() {
           selected={timePeriod}
           onPress={handleTimePeriodChange}
         />
-        <Chart expenses={expenses || []} onBarPress={setSelectedExpenses} />
+        <Chart
+          expenses={timePeriodExpenses.data || []}
+          onBarPress={setSelectedExpenses}
+          loading={timePeriodExpenses.loading}
+        />
         <CategoryExpenses
           totalAmount={selectedExpenses?.totalAmount || 0}
           expenses={selectedExpenses?.categoryExpenses || []}
@@ -52,8 +57,10 @@ export default function Home() {
         />
         <Table
           title="Recent expenses"
-          expenses={recentExpenses || []}
+          expenses={recentExpenses.data || []}
+          loading={recentExpenses.loading}
           onPress={() => router.push("/expenses")}
+          onRowPress={(expense) => router.push(`/edit?expenseId=${expense.id}`)}
         />
       </ScrollView>
       <Fab onPress={() => router.push("/add")} />

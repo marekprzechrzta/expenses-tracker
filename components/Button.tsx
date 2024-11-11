@@ -1,6 +1,12 @@
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  DimensionValue,
+} from "react-native";
+
 import styles from "@/constants/styles";
 import { color, font, size } from "@/constants/theme";
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
 
 export default function Button({
   label,
@@ -8,18 +14,21 @@ export default function Button({
   selected,
   fontColor,
   backgroundColor,
+  width,
 }: {
   label: string;
   onPress: (label: string) => void;
   selected?: boolean;
   fontColor?: string;
   backgroundColor?: string;
+  width?: DimensionValue;
 }) {
   const createContainerStyle = () => ({
     ...style.button,
     ...styles.center,
     ...(backgroundColor && { backgroundColor }),
     ...(selected && style.selected),
+    width,
   });
 
   const createTextStyle = () => ({

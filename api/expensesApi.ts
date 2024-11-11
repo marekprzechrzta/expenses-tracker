@@ -45,6 +45,29 @@ export const getAllExpenses = async () => {
   return db.getAllAsync<Expense>(query);
 };
 
+export const getExpense = async (expenseId: string) => {
+  const db = await getDatabase();
+  const query = `SELECT * FROM expenses WHERE id = ${expenseId}`;
+  return db.getFirstAsync<Expense>(query);
+};
+
+export const deleteExpense = async (expenseId: string) => {
+  const db = await getDatabase();
+  const query = `DELETE FROM expenses WHERE id = ${expenseId}`;
+  return db.runAsync(query);
+};
+
+export const updateExpense = async ({
+  id,
+  name,
+  amount,
+  category,
+}: Expense) => {
+  const db = await getDatabase();
+  const query = `UPDATE expenses SET name = ?, amount = ?, category = ? WHERE id = ?`;
+  return db.runAsync(query, [name, amount, category, id]);
+};
+
 export const searchByName = async (
   search: string,
   timePeriod?: string,
@@ -73,7 +96,7 @@ export const findExpenses = async (timePeriod: string, date: string) => {
 };
 
 export const getTimePeriodExpenses = async (timePeriod = "Daily") => {
-  const db = await SQLite.openDatabaseAsync("expensesDb");
+  const db = await getDatabase();
   const query = createQueryGroupByTimePeriodAndCategory(timePeriod);
   const items = await db.getAllAsync<GroupExpense>(query);
   const maxColumnSize = 8;

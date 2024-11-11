@@ -1,6 +1,6 @@
 import { TextInput, View, StyleSheet, KeyboardTypeOptions } from "react-native";
 import { useState } from "react";
-import EvilIcons from "@expo/vector-icons/EvilIcons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 import { color, shadow, size } from "@/constants/theme";
 import Label from "./Label";
@@ -26,12 +26,14 @@ export default function Input({
   return (
     <View style={styles.containerPadding}>
       {label && <Label label={label} />}
-      <View>
+      <View
+        style={{
+          ...style.textInput,
+          ...(selected && shadow.small),
+        }}
+      >
         <TextInput
-          style={{
-            ...style.textInput,
-            ...(selected && shadow.small),
-          }}
+          style={{ width: "90%" }}
           value={text}
           onChangeText={onChangeText}
           placeholder={placeholder}
@@ -40,15 +42,10 @@ export default function Input({
           onBlur={() => setSelected(false)}
         />
         {icon && (
-          <EvilIcons
-            name={icon}
-            size={24}
-            color="black"
-            style={{
-              position: "absolute",
-              right: size.small,
-              top: size.large / 2,
-            }}
+          <MaterialCommunityIcons
+            name="magnify"
+            size={size.large}
+            color={color.gray2}
           />
         )}
       </View>
@@ -61,7 +58,11 @@ const style = StyleSheet.create({
     height: size.large * 2,
     backgroundColor: color.gray1,
     borderRadius: size.large * 2,
-    paddingLeft: size.small,
+    paddingLeft: size.medium,
     paddingRight: size.small,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 });

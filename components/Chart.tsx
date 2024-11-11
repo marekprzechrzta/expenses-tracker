@@ -1,4 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useEffect, useState } from "react";
 
@@ -14,9 +20,11 @@ import { calculateScale } from "@/helpers/calculateScale";
 export function Chart({
   expenses,
   onBarPress,
+  loading,
 }: {
   expenses: TimePeriodExpense[];
   onBarPress: (expense: TimePeriodExpense) => void;
+  loading?: boolean;
 }) {
   const initialBarIdx = expenses.length - 1;
   const [selectedBarIdx, setSelectedBarIdx] = useState(initialBarIdx);
@@ -28,7 +36,7 @@ export function Chart({
 
   const selectedExpenses = expenses[selectedBarIdx];
   const selectedDate = selectedExpenses?.date;
-  const timePeriod = selectedExpenses?.timePeriod;
+  const selectedTimePeriod = selectedExpenses?.timePeriod;
 
   const handleBarPress = (barIdx: number) => {
     setSelectedBarIdx(barIdx);
@@ -37,9 +45,12 @@ export function Chart({
 
   return (
     <View style={styles.containerPadding}>
-      <Text style={style.title}>
-        {toDateLongText(timePeriod, selectedDate)}
-      </Text>
+      <View style={style.titleContainer}>
+        <Text style={style.titleText}>
+          {toDateLongText(selectedTimePeriod, selectedDate)}
+        </Text>
+        {loading && <ActivityIndicator size="small" color={color.primary} />}
+      </View>
       <View>
         <Grid />
         <Bars
@@ -167,9 +178,16 @@ const ArrowDown = () => {
 const chartHeight = 200;
 
 const style = StyleSheet.create({
-  title: {
-    fontFamily: font.bold,
+  titleContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    columnGap: size.small,
+    height: size.large,
     marginBottom: size.small,
+  },
+  titleText: {
+    fontFamily: font.bold,
   },
   containerSize: {
     width: "100%",

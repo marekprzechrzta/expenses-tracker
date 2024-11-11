@@ -29,12 +29,16 @@ export default function Header({
       <Text style={style.title} onPress={() => router.push("/test")}>
         {title}
       </Text>
-      <Image source={images.logo} />
+      <Image style={style.image} source={images.logo} resizeMode="contain" />
     </View>
   );
 }
 
 const style = StyleSheet.create({
+  image: {
+    width: size.medium * 4,
+    height: size.medium * 4,
+  },
   title: {
     fontSize: size.large,
     color: color.gray2,

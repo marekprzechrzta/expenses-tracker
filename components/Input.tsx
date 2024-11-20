@@ -10,16 +10,20 @@ export default function Input({
   text,
   label,
   onChangeText,
+  onPress,
   placeholder,
   keyboardType,
   icon,
+  editable,
 }: {
   text: string;
   label?: string;
-  onChangeText: (text: string) => void;
+  onChangeText?: (text: string) => void;
+  onPress?: () => void;
   placeholder?: string;
   keyboardType?: KeyboardTypeOptions;
   icon?: "search";
+  editable?: boolean;
 }) {
   const [selected, setSelected] = useState(false);
 
@@ -33,13 +37,15 @@ export default function Input({
         }}
       >
         <TextInput
+          editable={editable === undefined ? true : editable}
           style={{ width: "90%" }}
           value={text}
+          onPress={onPress}
           onChangeText={onChangeText}
           placeholder={placeholder}
           keyboardType={keyboardType || "default"}
-          onFocus={() => setSelected(true)}
-          onBlur={() => setSelected(false)}
+          //onFocus={() => setSelected(true)}
+          //onBlur={() => setSelected(false)}
         />
         {icon && (
           <MaterialCommunityIcons

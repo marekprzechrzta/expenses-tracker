@@ -12,7 +12,7 @@ export default function Empty() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StackScreen />
-      <Header title="Expenses tracker" />
+      <Header title="Expenses tracker" settings={true} />
       <View
         style={{
           ...styles.containerPadding,

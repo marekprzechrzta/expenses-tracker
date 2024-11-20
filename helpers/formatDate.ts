@@ -1,3 +1,6 @@
+import { getLocales } from "expo-localization";
+
 export const formatDate = (date: string | Date) => {
-  return new Date(date).toLocaleDateString();
+  const locale = getLocales()[0];
+  return new Date(date).toLocaleDateString(locale.languageTag);
 };

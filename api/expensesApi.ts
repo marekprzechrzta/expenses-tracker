@@ -14,11 +14,12 @@ const initDatabase = async () => {
   await db.execAsync(`
       PRAGMA journal_mode = WAL;
       CREATE TABLE IF NOT EXISTS expenses (id INTEGER PRIMARY KEY NOT NULL, name TEXT NOT NULL, category TEXT NOT NULL, amount REAL, date TEXT NOT NULL);
+      CREATE TABLE IF NOT EXISTS categories (value TEXT PRIMARY KEY NOT NULL, label TEXT NOT NULL);
     `);
   return db;
 };
 
-const getDatabase = async () => {
+export const getDatabase = async () => {
   if (!_db) {
     _db = await initDatabase();
   }
@@ -62,10 +63,11 @@ export const updateExpense = async ({
   name,
   amount,
   category,
+  date,
 }: Expense) => {
   const db = await getDatabase();
-  const query = `UPDATE expenses SET name = ?, amount = ?, category = ? WHERE id = ?`;
-  return db.runAsync(query, [name, amount, category, id]);
+  const query = `UPDATE expenses SET name = ?, amount = ?, category = ?, date = ? WHERE id = ?`;
+  return db.runAsync(query, [name, amount, category, date, id]);
 };
 
 export const searchByName = async (

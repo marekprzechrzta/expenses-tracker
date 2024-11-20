@@ -15,6 +15,7 @@ import useFunction from "@/hooks/useFunction";
 import { getRecentExpenses, getTimePeriodExpenses } from "@/api/expensesApi";
 import styles from "@/constants/styles";
 import { TimePeriodExpense } from "@/models/TimePeriodExpense";
+import { useT } from "@/translations/_i18t";
 
 export default function Home() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function Home() {
   const timePeriodExpenses = useFunction(getTimePeriodExpenses);
   const [timePeriod, setTimePeriod] = useState("Daily");
   const [selectedExpenses, setSelectedExpenses] = useState<TimePeriodExpense>();
+  const { t } = useT();
 
   const loading = recentExpenses.loading || timePeriodExpenses.loading;
   const categoryExpensesQuery = `timePeriod=${timePeriod}&date=${selectedExpenses?.date}`;
@@ -38,10 +40,15 @@ export default function Home() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StackScreen />
-      <Header title="Expenses tracker" />
+      <Header title={t("expenses_tracker")} settings={true} />
       <ScrollView>
         <ButtonGroup
-          labels={["Daily", "Weekly", "Monthly", "Yearly"]}
+          items={[
+            { value: "Daily", label: t("daily") },
+            { value: "Weekly", label: t("weekly") },
+            { value: "Monthly", label: t("monthly") },
+            { value: "Yearly", label: t("yearly") },
+          ]}
           selected={timePeriod}
           onPress={handleTimePeriodChange}
         />
@@ -56,7 +63,7 @@ export default function Home() {
           onPress={() => router.push(`/expenses?${categoryExpensesQuery}`)}
         />
         <Table
-          title="Recent expenses"
+          title={t("recent_expenses")}
           expenses={recentExpenses.data || []}
           loading={recentExpenses.loading}
           onPress={() => router.push("/expenses")}

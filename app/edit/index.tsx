@@ -2,6 +2,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, View, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import Button from "@/components/Button";
 import Header from "@/components/Header";
@@ -14,14 +15,22 @@ import { parseNumber } from "@/helpers/parseNumber";
 import { deleteExpense, getExpense, updateExpense } from "@/api/expensesApi";
 import useFunction from "@/hooks/useFunction";
 import StackScreen from "@/components/StackScreen";
-
-const categories = ["Food", "Alcohol", "Clothes", "Commute", "House", "Other"];
+import { useT } from "@/translations/_i18t";
+import { getCategories } from "@/api/categoriesApi";
+import { DatePicker } from "@/components/DatePicker";
 
 export default function Add() {
   const router = useRouter();
   const { expenseId } = useLocalSearchParams<SearchParams>();
-  const [form, setForm] = useState({ name: "", amount: "", category: "" });
+  const [form, setForm] = useState({
+    name: "",
+    amount: "",
+    category: "",
+    date: new Date(),
+  });
   const { call } = useFunction();
+  const { t } = useT();
+  const { data: categories } = useFunction(getCategories);
 
   useEffect(() => {
     const findExpense = async () => {
@@ -31,6 +40,7 @@ export default function Add() {
           name: expense.name,
           amount: String(expense.amount),
           category: expense.category,
+          date: new Date(expense.date),
         });
       }
     };
@@ -50,7 +60,7 @@ export default function Add() {
         name: form.name,
         amount: parseNumber(form.amount),
         category: form.category,
-        date: new Date().toISOString(),
+        date: form.date.toISOString(),
       })
     );
 
@@ -77,44 +87,51 @@ export default function Add() {
     }
   };
 
+  const onChange = (selectedDate: Date) => {
+    setForm((prev) => ({ ...prev, date: selectedDate }));
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StackScreen />
-      <Header title="Edit an expense" backArrow={true} />
-      <Input
-        text={form.name}
-        onChangeText={(name) => setForm({ ...form, name })}
-        placeholder="ie. Bear"
-        label="Expense name"
-      />
-      <Input
-        text={form.amount}
-        onChangeText={(amount) => setForm({ ...form, amount })}
-        placeholder="50"
-        label="Amount"
-        keyboardType="numeric"
-      />
-      <Select
-        items={categories}
-        selected={form.category}
-        onPress={(category) => setForm({ ...form, category })}
-      />
-      <View style={{ ...styles.containerPadding, ...style.actionsContainer }}>
-        <Button
-          label={"Delete"}
-          onPress={handleDeleteExpense}
-          backgroundColor="red"
-          fontColor={color.white}
-          width="45%"
+      <Header title={t("edit_an_expense")} backArrow={true} />
+      <KeyboardAwareScrollView>
+        <Input
+          text={form.name}
+          onChangeText={(name) => setForm({ ...form, name })}
+          placeholder={t("ie_beer")}
+          label={t("expense_name")}
         />
-        <Button
-          label={"Save"}
-          onPress={handleUpdateExpense}
-          backgroundColor={color.primary}
-          fontColor={color.white}
-          width="45%"
+        <Input
+          text={form.amount}
+          onChangeText={(amount) => setForm({ ...form, amount })}
+          placeholder="50"
+          label={t("amount")}
+          keyboardType="numeric"
         />
-      </View>
+        <Select
+          items={categories || []}
+          selected={form.category}
+          onPress={(category) => setForm({ ...form, category })}
+        />
+        <DatePicker label={t("date")} value={form.date} onChange={onChange} />
+        <View style={{ ...styles.containerPadding, ...style.actionsContainer }}>
+          <Button
+            label={t("delete")}
+            onPress={handleDeleteExpense}
+            backgroundColor="red"
+            fontColor={color.white}
+            width="45%"
+          />
+          <Button
+            label={t("save")}
+            onPress={handleUpdateExpense}
+            backgroundColor={color.primary}
+            fontColor={color.white}
+            width="45%"
+          />
+        </View>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

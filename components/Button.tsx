@@ -3,7 +3,9 @@ import {
   Text,
   StyleSheet,
   DimensionValue,
+  ActivityIndicator,
 } from "react-native";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 import styles from "@/constants/styles";
 import { color, font, size } from "@/constants/theme";
@@ -15,6 +17,8 @@ export default function Button({
   fontColor,
   backgroundColor,
   width,
+  icon,
+  loading,
 }: {
   label: string;
   onPress: (label: string) => void;
@@ -22,6 +26,8 @@ export default function Button({
   fontColor?: string;
   backgroundColor?: string;
   width?: DimensionValue;
+  icon?: string;
+  loading?: boolean;
 }) {
   const createContainerStyle = () => ({
     ...style.button,
@@ -42,6 +48,13 @@ export default function Button({
       onPress={() => onPress(label)}
     >
       <Text style={createTextStyle()}>{label}</Text>
+      {loading && selected ? (
+        <ActivityIndicator color={color.black} />
+      ) : (
+        icon && (
+          <FontAwesome name={icon as any} size={size.large} color="black" />
+        )
+      )}
     </TouchableOpacity>
   );
 }
@@ -56,8 +69,13 @@ const style = StyleSheet.create({
     backgroundColor: "rgba(79, 55, 138, 0.23)",
     height: size.large * 2,
     borderRadius: size.large * 2,
-    paddingLeft: size.medium,
-    paddingRight: size.medium,
+    paddingLeft: size.small,
+    paddingRight: size.small,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    columnGap: size.small,
   },
   text: {
     color: color.black,

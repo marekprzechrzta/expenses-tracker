@@ -8,9 +8,11 @@ import {
 } from "react-native";
 
 import styles from "@/constants/styles";
-import { color, font, size } from "@/constants/theme";
+import { color, font, shadow, size } from "@/constants/theme";
 import { Expense } from "@/models/Expense";
 import { formatDate } from "@/helpers/formatDate";
+import { formatPrice } from "@/helpers/formatPrice";
+import { useT } from "@/translations/_i18t";
 
 export default function Table({
   title,
@@ -53,6 +55,8 @@ const Row = ({
   expense: Expense;
   onRowPress?: (expense: Expense) => void;
 }) => {
+  const { t } = useT();
+
   return (
     <TouchableOpacity
       style={style.row}
@@ -60,8 +64,8 @@ const Row = ({
       disabled={!onRowPress}
     >
       <Cell label={expense.name} width="35%" />
-      <Cell label={`$${expense.amount}`} width="15%" />
-      <Cell label={expense.category} width="25%" />
+      <Cell label={formatPrice(expense.amount)} width="20%" />
+      <Cell label={t(expense.category)} width="20%" />
       <Cell label={formatDate(expense.date)} textAlign="right" width="25%" />
     </TouchableOpacity>
   );
@@ -78,9 +82,13 @@ const Cell = ({
 }) => {
   return (
     <Text
+      numberOfLines={1}
       style={{
         ...style.cell,
         ...(textAlign && { textAlign }),
+        ...(textAlign === "right"
+          ? { paddingLeft: size.small / 2 }
+          : { paddingRight: size.small / 2 }),
         width,
       }}
     >
@@ -99,13 +107,19 @@ const style = StyleSheet.create({
     height: size.large,
   },
   titleText: {
+    borderRadius: size.small,
+    paddingLeft: size.small / 2,
+    paddingRight: size.small / 2,
+    backgroundColor: color.secondary,
     fontSize: size.medium,
     fontFamily: font.bold,
     color: color.black,
+    ...shadow.small,
   },
   row: {
     ...styles.containerLayout,
-    paddingBottom: size.large / 2,
+    paddingTop: size.medium / 2,
+    paddingBottom: size.medium / 2,
   },
   cell: {
     fontFamily: font.regular,

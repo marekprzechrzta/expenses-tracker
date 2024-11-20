@@ -5,6 +5,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import {
   clearDatabase,
   createRandomExpense,
+  dropCategories,
+  getCategories,
+  seedCategories,
   seedDatabase,
 } from "@/api/testApi";
 import Button from "@/components/Button";
@@ -24,6 +27,9 @@ export default function Test() {
         <Button label="Seed database" onPress={seedDatabase} />
         <Button label="Create random expense" onPress={createRandomExpense} />
         <Button label="Clear database" onPress={clearDatabase} />
+        <Button label="Drop categories" onPress={dropCategories} />
+        <Button label="Seed categories" onPress={seedCategories} />
+        <Button label="Get categories" onPress={getCategories} />
         <Button
           label="Back to home"
           onPress={() => {

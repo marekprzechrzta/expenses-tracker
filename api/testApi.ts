@@ -1,6 +1,48 @@
 import * as SQLite from "expo-sqlite";
 
-import { createExpense } from "./expensesApi";
+import { createExpense, getDatabase } from "./expensesApi";
+import { Category } from "@/models/Category";
+
+export const getCategories = async () => {
+  try {
+    const db = await getDatabase();
+    const query = `SELECT * FROM categories`;
+    const res = await db.getAllAsync<Category>(query);
+    alert(JSON.stringify(res));
+    return res;
+  } catch (e) {
+    alert(e);
+  }
+};
+
+export const dropCategories = async () => {
+  try {
+    const db = await SQLite.openDatabaseAsync("expensesDb");
+    const res = await db.execAsync(`
+      PRAGMA journal_mode = WAL;
+      DROP TABLE IF EXISTS categories;
+    `);
+  } catch (e) {
+    alert(e);
+  }
+};
+
+export const seedCategories = async () => {
+  try {
+    const db = await SQLite.openDatabaseAsync("expensesDb");
+    await db.execAsync(`
+      PRAGMA journal_mode = WAL;
+      CREATE TABLE IF NOT EXISTS categories (value TEXT PRIMARY KEY NOT NULL, label TEXT);
+      INSERT INTO categories (value, label) VALUES ('food', 'Food');
+      INSERT INTO categories (value, label) VALUES ('alcohol', 'Alcohol');
+      INSERT INTO categories (value, label) VALUES ('clothes', 'Clothes');
+      INSERT INTO categories (value, label) VALUES ('other', 'Other');
+      INSERT INTO categories (value, label) VALUES ('commute', 'Commute');
+    `);
+  } catch (e) {
+    alert(e);
+  }
+};
 
 export const seedDatabase = async () => {
   const db = await SQLite.openDatabaseAsync("expensesDb");

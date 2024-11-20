@@ -12,6 +12,7 @@ import styles from "@/constants/styles";
 import { Expense } from "@/models/Expense";
 import { toDateLongText } from "@/helpers/toDateLongText";
 import Input from "@/components/Input";
+import { useT } from "@/translations/_i18t";
 
 export default function Expenses() {
   const router = useRouter();
@@ -19,9 +20,12 @@ export default function Expenses() {
   const getAll = useCallback(getAllExpenses, []);
   const find = useCallback(() => findExpenses(timePeriod, date), []);
   const expenses = useFunction<Expense[]>(timePeriod ? find : getAll);
-  const title = timePeriod ? "Expenses by category" : "All expenses";
-  const tableTitle = timePeriod ? toDateLongText(timePeriod, date) : "Expenses";
   const [search, setSearch] = useState("");
+  const { t } = useT();
+  const tableTitle = timePeriod
+    ? toDateLongText(timePeriod, date)
+    : t("expenses");
+  const title = timePeriod ? t("expenses_by_category") : t("all_expenses");
 
   const handleSearch = (text: string) => {
     setSearch(text);
@@ -34,7 +38,7 @@ export default function Expenses() {
       <Header title={title} backArrow={true} />
       <Input
         text={search}
-        placeholder="Search by name or category"
+        placeholder={t("search_by_name_or_category")}
         onChangeText={handleSearch}
         icon="search"
       />

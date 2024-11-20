@@ -9,15 +9,17 @@ import { useRouter } from "expo-router";
 export default function Header({
   title,
   backArrow,
+  settings,
 }: {
   title: string;
   backArrow?: boolean;
+  settings?: boolean;
 }) {
   const router = useRouter();
 
   return (
     <View style={{ ...styles.container, alignItems: "center" }}>
-      {backArrow && (
+      {backArrow ? (
         <TouchableOpacity onPress={() => router.back()}>
           <MaterialIcons
             name="arrow-back-ios"
@@ -25,14 +27,31 @@ export default function Header({
             color={color.primary}
           />
         </TouchableOpacity>
+      ) : (
+        <Logo />
       )}
       <Text style={style.title} onPress={() => router.push("/test")}>
         {title}
       </Text>
-      <Image style={style.image} source={images.logo} resizeMode="contain" />
+      {settings ? (
+        <MaterialIcons
+          name="settings"
+          size={size.large * 2}
+          color={color.gray2}
+          onPress={() => router.push("/settings")}
+        />
+      ) : (
+        <Logo />
+      )}
     </View>
   );
 }
+
+const Logo = () => {
+  return (
+    <Image style={style.image} source={images.logo} resizeMode="contain" />
+  );
+};
 
 const style = StyleSheet.create({
   image: {

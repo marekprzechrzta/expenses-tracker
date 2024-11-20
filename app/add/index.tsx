@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import Button from "@/components/Button";
 import Header from "@/components/Header";
@@ -14,13 +15,25 @@ import { parseNumber } from "@/helpers/parseNumber";
 import { createExpense } from "@/api/expensesApi";
 import useFunction from "@/hooks/useFunction";
 import StackScreen from "@/components/StackScreen";
-
-const categories = ["Food", "Alcohol", "Clothes", "Commute", "House", "Other"];
+import { useT } from "@/translations/_i18t";
+import { getCategories } from "@/api/categoriesApi";
+import { DatePicker } from "@/components/DatePicker";
 
 export default function Add() {
   const router = useRouter();
-  const [form, setForm] = useState({ name: "", amount: "", category: "" });
-  const { call, loading } = useFunction();
+  const [form, setForm] = useState({
+    name: "",
+    amount: "",
+    category: "",
+    date: new Date(),
+  });
+  const { call } = useFunction();
+  const { t } = useT();
+  const { data: categories } = useFunction(getCategories);
+
+  const onChange = (selectedDate: Date) => {
+    setForm((prev) => ({ ...prev, date: selectedDate }));
+  };
 
   const handleCreateExpense = async () => {
     const error = getValidationError();
@@ -34,7 +47,7 @@ export default function Add() {
         name: form.name,
         amount: parseNumber(form.amount),
         category: form.category,
-        date: new Date().toISOString(),
+        date: form.date.toISOString(),
       })
     );
 
@@ -59,33 +72,36 @@ export default function Add() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StackScreen />
-      <Header title="Create an expense" backArrow={true} />
-      <Input
-        text={form.name}
-        onChangeText={(name) => setForm({ ...form, name })}
-        placeholder="ie. Bear"
-        label="Expense name"
-      />
-      <Input
-        text={form.amount}
-        onChangeText={(amount) => setForm({ ...form, amount })}
-        placeholder="50"
-        label="Amount"
-        keyboardType="numeric"
-      />
-      <Select
-        items={categories}
-        selected={form.category}
-        onPress={(category) => setForm({ ...form, category })}
-      />
-      <View style={{ ...styles.containerPadding, marginTop: size.large }}>
-        <Button
-          label={"Add"}
-          onPress={handleCreateExpense}
-          backgroundColor={color.primary}
-          fontColor={color.white}
+      <Header title={t("create_an_expense")} backArrow={true} />
+      <KeyboardAwareScrollView>
+        <Input
+          text={form.name}
+          onChangeText={(name) => setForm({ ...form, name })}
+          placeholder={t("ie_beer")}
+          label={t("expense_name")}
         />
-      </View>
+        <Input
+          text={form.amount}
+          onChangeText={(amount) => setForm({ ...form, amount })}
+          placeholder="50"
+          label={t("amount")}
+          keyboardType="numeric"
+        />
+        <Select
+          items={categories || []}
+          selected={form.category}
+          onPress={(category) => setForm({ ...form, category })}
+        />
+        <DatePicker label={t("date")} value={form.date} onChange={onChange} />
+        <View style={{ ...styles.containerPadding, marginTop: size.large }}>
+          <Button
+            label={t("add")}
+            onPress={handleCreateExpense}
+            backgroundColor={color.primary}
+            fontColor={color.white}
+          />
+        </View>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

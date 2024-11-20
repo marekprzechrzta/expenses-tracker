@@ -5,13 +5,13 @@ import styles from "@/constants/styles";
 import { size } from "@/constants/theme";
 
 export default function ButtonGroup({
-  labels,
+  items,
   selected,
   onPress,
 }: {
-  labels: string[];
+  items: { value: string; label: string }[];
   selected: string;
-  onPress: (label: string) => void;
+  onPress: (value: string) => void;
 }) {
   const createContainerStyle = (): StyleProp<ViewStyle> => ({
     ...styles.container,
@@ -21,12 +21,12 @@ export default function ButtonGroup({
 
   return (
     <View style={createContainerStyle()}>
-      {labels.map((item) => (
+      {items.map((item) => (
         <Button
-          key={item}
-          selected={selected === item}
-          label={item}
-          onPress={onPress}
+          key={item.value}
+          selected={selected === item.value}
+          label={item.label}
+          onPress={() => onPress(item.value)}
         />
       ))}
     </View>
